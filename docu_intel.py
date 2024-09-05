@@ -11,7 +11,8 @@ from docx.shared import Pt
 import fitz  # PyMuPDF  
 import os  
 import cv2  
-import numpy as np  
+import numpy as np
+import pytesseract  
   
 # Azure OpenAI credentials  
 azure_endpoint = "https://gpt-4omniwithimages.openai.azure.com/"  
@@ -399,7 +400,7 @@ def extract_images_from_pdf(pdf_file, top_mask, bottom_mask, left_mask, right_ma
   
     pdf_document.close()  
     return page_images  
-  
+
 def main():  
     st.title("PPT Insights Extractor")   
   
@@ -461,38 +462,41 @@ def main():
         base_filename = os.path.splitext(ppt_filename)[0]  
         output_word_filename = f"{base_filename}.docx"  
   
-        # Convert PPT to PDF  
-        with open("temp_ppt.pptx", "wb") as f:  
-            f.write(uploaded_ppt.read())  
-        if not ppt_to_pdf("temp_ppt.pptx", "temp_pdf.pdf"):  
-            st.error("PDF conversion failed. Please check the uploaded PPT file.")  
-            return  
+        try:  
+            # Convert PPT to PDF  
+            with open("temp_ppt.pptx", "wb") as f:  
+                f.write(uploaded_ppt.read())  
+            if not ppt_to_pdf("temp_ppt.pptx", "temp_pdf.pdf"):  
+                st.error("PDF conversion failed. Please check the uploaded PPT file.")  
+                return  
   
-        # Extract text and identify slides with visual elements  
-        text_content = extract_text_from_ppt("temp_ppt.pptx")  
-        visual_slides = identify_visual_elements("temp_ppt.pptx")  
+            # Extract text and identify slides with visual elements  
+            text_content = extract_text_from_ppt("temp_ppt.pptx")  
+            visual_slides = identify_visual_elements("temp_ppt.pptx")  
   
-        # Capture images of marked slides  
-        slide_images = capture_slide_images("temp_pdf.pdf", visual_slides)  
+            # Capture images of marked slides  
+            slide_images = capture_slide_images("temp_pdf.pdf", visual_slides)  
   
-        st.info("Generating text insights...")  
-        text_insights = generate_text_insights(text_content, visual_slides, text_length)  
+            st.info("Generating text insights...")  
+            text_insights = generate_text_insights(text_content, visual_slides, text_length)  
   
-        st.info("Generating image insights...")  
-        image_insights = generate_image_insights(slide_images, text_length)  
+            st.info("Generating image insights...")  
+            image_insights = generate_image_insights(slide_images, text_length)  
   
-        st.info("Extracting additional images...")  
-        extracted_images = extract_images_from_pdf("temp_pdf.pdf", top_mask, bottom_mask, left_mask, right_mask)  
+            st.info("Extracting additional images...")  
+            extracted_images = extract_images_from_pdf("temp_pdf.pdf", top_mask, bottom_mask, left_mask, right_mask)  
   
-        st.info("Aggregating content...")  
-        aggregated_content = aggregate_content(text_insights, image_insights)  
+            st.info("Aggregating content...")  
+            aggregated_content = aggregate_content(text_insights, image_insights)  
   
-        st.info("Saving to Word document...")  
-        output_doc = save_content_to_word(aggregated_content, output_word_filename, extracted_images)  
+            st.info("Saving to Word document...")  
+            output_doc = save_content_to_word(aggregated_content, output_word_filename, extracted_images)  
   
-        st.download_button(label="Download Word Document", data=output_doc, file_name=output_word_filename)  
+            st.download_button(label="Download Word Document", data=output_doc, file_name=output_word_filename)  
   
-        st.success("Processing completed successfully!")  
+            st.success("Processing completed successfully!")  
+        except Exception as e:  
+            st.error(f"An error occurred: {e}")  
   
 if __name__ == "__main__":  
     main()  
