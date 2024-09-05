@@ -401,8 +401,51 @@ def extract_images_from_pdf(pdf_file, top_mask, bottom_mask, left_mask, right_ma
     return page_images  
   
 def main():  
-    st.title("PPT Insights Extractor")    
-   
+    st.title("PPT Insights Extractor")  
+  
+    # Add Title and Information Button for Content Generation Slider  
+    st.markdown("### Content Generation Slider")  
+    st.markdown(  
+        """  
+        <style>  
+        .tooltip {  
+            position: relative;  
+            display: inline-block;  
+            cursor: pointer;  
+        }  
+        .tooltip .tooltiptext {  
+            visibility: hidden;  
+            width: 200px;  
+            background-color: #f9f9f9;  
+            color: #333;  
+            text-align: center;  
+            border-radius: 6px;  
+            padding: 5px;  
+            position: absolute;  
+            z-index: 1;  
+            bottom: 100%; /* Position above the icon */  
+            left: 50%;  
+            margin-left: -100px;  
+            opacity: 0;  
+            transition: opacity 0.3s;  
+        }  
+        .tooltip:hover .tooltiptext {  
+            visibility: visible;  
+            opacity: 1;  
+        }  
+        </style>  
+        """,  
+        unsafe_allow_html=True  
+    )  
+    st.markdown(  
+        """  
+        <div class="tooltip">ℹ️  
+            <span class="tooltiptext">Select the desired length for the generated content: Standard, Blend, or Creative.</span>  
+        </div>  
+        """,  
+        unsafe_allow_html=True  
+    )  
+  
     text_length = st.select_slider(  
         "Content Generation Slider",  
         options=["Standard", "Blend", "Creative"],  
@@ -411,6 +454,14 @@ def main():
   
     # Add Title and Information Button for Image Extraction Slider  
     st.sidebar.markdown("### Image Extraction Slider")  
+    st.sidebar.markdown(  
+        """  
+        <div class="tooltip">ℹ️  
+            <span class="tooltiptext">By adjusting the below values, you will get a much more cleaner image.</span>  
+        </div>  
+        """,  
+        unsafe_allow_html=True  
+    )  
   
     # Initialize session state variables for the sliders  
     if 'top_mask' not in st.session_state:  
@@ -430,7 +481,6 @@ def main():
             st.session_state.bottom_mask = 40  
             st.session_state.left_mask = 85  
             st.session_state.right_mask = 85  
-            st.experimental_rerun()  # Refresh the page to apply the changes  
   
     with col2:  
         if st.button("A4"):  
@@ -438,7 +488,6 @@ def main():
             st.session_state.bottom_mask = 70  
             st.session_state.left_mask = 85  
             st.session_state.right_mask = 85  
-            st.experimental_rerun()  # Refresh the page to apply the changes  
   
     # Add sliders to adjust the top, bottom, left, and right masking values  
     top_mask = st.sidebar.slider("Adjust Top Masking Value", min_value=10, max_value=100, value=st.session_state.top_mask, step=1)  
@@ -452,7 +501,6 @@ def main():
         st.session_state.bottom_mask = bottom_mask  
         st.session_state.left_mask = left_mask  
         st.session_state.right_mask = right_mask  
-        st.experimental_rerun()  # Refresh the page to apply the changes  
   
     uploaded_ppt = st.file_uploader("Upload a PPT file", type=["pptx"])  
   
@@ -499,3 +547,4 @@ def main():
   
 if __name__ == "__main__":  
     main()  
+
