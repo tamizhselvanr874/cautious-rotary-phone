@@ -401,9 +401,7 @@ def extract_images_from_pdf(pdf_file, top_mask, bottom_mask, left_mask, right_ma
     return page_images  
   
 def main():  
-    st.title("PPT Insights Extractor")  
-  
-    # Add Title and Information Button for Content Generation Slider   
+    st.title("PPT Insights Extractor")   
   
     text_length = st.select_slider(  
         "Content Generation Slider",  
@@ -416,9 +414,9 @@ def main():
   
     # Initialize session state variables for the sliders  
     if 'top_mask' not in st.session_state:  
-        st.session_state.top_mask = 70  
+        st.session_state.top_mask = 40  
     if 'bottom_mask' not in st.session_state:  
-        st.session_state.bottom_mask = 70  
+        st.session_state.bottom_mask = 40  
     if 'left_mask' not in st.session_state:  
         st.session_state.left_mask = 85  
     if 'right_mask' not in st.session_state:  
@@ -498,4 +496,3 @@ def main():
   
 if __name__ == "__main__":  
     main()  
-
